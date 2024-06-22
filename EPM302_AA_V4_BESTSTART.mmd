@@ -1,0 +1,680 @@
+<Document>
+<Version> 22 </Version>
+<JMadonnaVersion> 10.2.6 </JMadonnaVersion>
+<Bounds> 0 0 1438 847 </Bounds>
+<NotesEditor>
+<jeditorpane>
+<size>13</size><family>Lucida Grande</family>
+
+
+
+
+
+
+
+
+
+
+
+
+</jeditorpane>
+</NotesEditor>
+<jmadonna.EquationPanel>
+<DocPanel>
+</DocPanel>
+<jeditorpane>
+<size>12</size><family>Serif</family>
+
+METHOD RK4
+
+STARTTIME = 0
+STOPTIME = 180000
+DT = 0.05
+
+{==============================}
+{           DIFFERENTIAL EQUATIONS      }
+{==============================}
+
+{DIfferential equations for the young}
+
+   d/dt (Sus_y) = + births*(1-vacc_cov_y) - Sus_y*force_of_infn_y - Sus_y*age_rate_y
+
+   d/dt (Infous_y) = + Sus_y*force_of_infn_y - Infous_y*rec_rate - Infous_y*age_rate_y
+
+   d/dt (Imm_y) = + Infous_y*rec_rate - Imm_y*age_rate_y + births*vacc_cov_y
+
+{DIfferential equations for the old}
+
+   d/dt (Sus_o) = - Sus_o*force_of_infn_o + Sus_y*age_rate_y*(1-vacc_cov_o) - Sus_o*m_rate
+
+   d/dt (Infous_o) = + Sus_o*force_of_infn_o - Infous_o*rec_rate + Infous_y*age_rate_y - Infous_o*m_rate
+
+   d/dt (Imm_o) = + Infous_o*rec_rate - Imm_o*m_rate + Imm_y*age_rate_y*vacc_cov_o
+
+
+{=========================}
+{           INITIAL conditions               }
+{=========================}
+
+    INIT Sus_y = Sus_y0
+    INIT Infous_y = Infous_y0
+    INIT Imm_y = Imm_y0
+
+    INIT Sus_o = Sus_o0
+    INIT Infous_o = Infous_o0
+    INIT Imm_o = Imm_o0
+
+
+
+{=======================}
+{           INITIAL VALUES           }
+{=======================}
+
+Sus_y0 = tot_young*(1-vacc_cov_y*vacc_eff)-Infous_y0
+Sus_o0 = tot_old*(1-vacc_cov_o*vacc_eff)-Infous_y0
+
+Infous_y0 = 0
+Infous_o0 = 1
+
+Imm_y0 = tot_young*vacc_cov_y*vacc_eff
+Imm_o0 = tot_old*vacc_cov_o*vacc_eff
+
+
+{=============================================}
+{           DEMOGRAPHIC PARAMETERS AND VARIABLES   }
+{=============================================}
+
+age_rate_y = 1/(ave_durn_young*365) 
+
+ave_durn_young = 19	
+ave_durn_old = 43
+
+age_rate_y = 1/(ave_durn_young*365)
+
+m_rate = 1/(ave_durn_old*365)   
+births = tot_all*m_rate
+
+tot_young = 0.32*tot_all 
+tot_old = 0.68*tot_all
+tot_all = 89000
+
+
+{==========================================================}
+{           INFECTION-RELATED PARAMETERS                                                        }
+{            (note that these are in DAILY units, unless otherwise specified )                      }
+{==========================================================}
+
+infous_period = 6
+
+rec_rate = 1/infous_period		
+
+force_of_infn_y = b_yy*Infous_y + b_yo*Infous_o	
+
+force_of_infn_o = b_oy*Infous_y + b_oo*Infous_o		
+
+{==== Contact parameters =====}
+
+b_yy = b1
+b_yo = b2
+b_oy = b2
+b_oo = b2
+
+b1 = 7.52E-06
+
+b2 = 2.91E-06
+
+
+
+{========================================}
+{           VACCINATION-RELATED PARAMETERS       }
+{========================================}
+
+yr_start_vacc = 300
+
+prop_vacc_y = 0
+
+prop_vacc_o = 0
+
+vacc_cov_y = if (year<gt>yr_start_vacc) then prop_vacc_y else 0
+vacc_cov_o = if (year<gt>yr_start_vacc) then prop_vacc_o else 0
+
+vacc_eff = 0.8
+
+{=============================}
+{           TIME-RELATED VARIABLES    }
+{=============================}
+
+year  = time/365
+
+{==================================}
+{           USEFUL SUMMARY VARIABLES       }
+{==================================}
+
+prop_sus_y = Sus_y/tot_young 	
+prop_sus_o = Sus_o/tot_old 		
+
+prop_imm_y = Imm_y/tot_young
+prop_imm_o = Imm_o/tot_old 
+
+new_infn_y_p100000  = force_of_infn_y*Sus_y*100000/tot_young
+new_infn_o_p100000 = force_of_infn_o*Sus_o*100000/tot_old 		
+
+
+new_ifn = new_infn_y_p100000 + new_infn_o_p100000
+
+
+
+
+
+
+
+
+
+
+ 
+</jeditorpane>
+</jmadonna.EquationPanel>
+
+<imethod> euler </imethod>
+<Sliders>
+<SliderInfo>
+<name> prop_vacc </name>
+<default> 0.0 </default>
+<min> 0.0 </min>
+<max> 1.0 </max>
+<inc> 0.001 </inc>
+<log> false </log>
+<neg> false </neg>
+
+</SliderInfo>
+</Sliders>
+<jmadonna.ParameterPanel>
+<DocPanel>
+</DocPanel>
+<ParamSets>
+</ParamSets>
+</jmadonna.ParameterPanel>
+<jmadonna.MultiPanel>
+<DocPanel>
+</DocPanel>
+<DividerPercent> 1.0 </DividerPercent>
+<Orientation> -1 </Orientation>
+<idx> 0 </idx>
+<TabSplitter>
+<SelectedIndex> 5 </SelectedIndex>
+<graph.COutputFrame>
+<DocPanel>
+<Name>
+Graph 0
+</Name>
+</DocPanel>
+
+<SingleView>
+<graph.COutputView>
+<Name> Graph </Name>
+<GraphToolBar>
+<Grid> 1 </Grid>
+<Readout> 1 </Readout>
+</GraphToolBar>
+<Plot>
+<LineWidth> 1 </LineWidth>
+</Plot>
+<OV_XVAR>
+<VI_SYMBOL> TIME </VI_SYMBOL>
+</OV_XVAR>
+<OV_YVARS>
+<OV_YVAR_I>
+<VI_SYMBOL> Sus_y </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> false </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> Infous_y </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> true </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> Imm_y </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> false </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> Sus_o </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> true </VI_Y2AXIS>
+</OV_YVAR_I>
+</OV_YVARS>
+<OV_TABLE> false </OV_TABLE>
+<OV_FFT> false </OV_FFT>
+<OV_COLORS> true </OV_COLORS>
+<OV_STYLES> false </OV_STYLES>
+<OV_OSCMODE> false </OV_OSCMODE>
+<OV_LINES> true </OV_LINES>
+<OV_POINTS> false </OV_POINTS>
+<OV_GRID> true </OV_GRID>
+<OV_DBTN> true </OV_DBTN>
+<OV_LEGEND> false </OV_LEGEND>
+<OV_PARAMS> false </OV_PARAMS>
+<OV_READOUT> true </OV_READOUT>
+<OV_INITCOND> false </OV_INITCOND>
+<OV_RDOUTFXFY> 130434.78260869565 19373.776908023483 </OV_RDOUTFXFY>
+<OV_ZSNORMAL>
+</OV_ZSNORMAL>
+<OV_ZSFFT>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> true </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSFFT>
+<OV_ZSOSCMODE>
+</OV_ZSOSCMODE>
+<OV_AUTOLABEL> 0 0 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 1 1 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 2 1 </OV_AUTOLABEL>
+<OV_X1LABELS>                       TIME (days)            </OV_X1LABELS>
+<OV_Y1LABELS>  Sus_y, Imm_y </OV_Y1LABELS>
+<OV_Y2LABELS>  Infous_y, Sus_o </OV_Y2LABELS>
+<OV_LEGENDXY> 0.3 0.5 </OV_LEGENDXY>
+<OV_PARAMSXY> 0.3 0.5 </OV_PARAMSXY>
+<OV_COLORTABLE> 0 <OV_COLORTABLE>
+</graph.COutputView>
+</SingleView>
+</graph.COutputFrame>
+<graph.COutputFrame>
+<DocPanel>
+<Name>
+Graph 1
+</Name>
+</DocPanel>
+
+<SingleView>
+<graph.COutputView>
+<Name> Graph </Name>
+<GraphToolBar>
+<Legend> 1 </Legend>
+<Grid> 1 </Grid>
+</GraphToolBar>
+<Plot>
+<LineWidth> 1 </LineWidth>
+</Plot>
+<OV_XVAR>
+<VI_SYMBOL> year </VI_SYMBOL>
+</OV_XVAR>
+<OV_YVARS>
+<OV_YVAR_I>
+<VI_SYMBOL> new_infn_y_p100000 </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> false </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> new_infn_o_p100000 </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> false </VI_Y2AXIS>
+</OV_YVAR_I>
+</OV_YVARS>
+<OV_TABLE> false </OV_TABLE>
+<OV_FFT> false </OV_FFT>
+<OV_COLORS> true </OV_COLORS>
+<OV_STYLES> false </OV_STYLES>
+<OV_OSCMODE> false </OV_OSCMODE>
+<OV_LINES> true </OV_LINES>
+<OV_POINTS> false </OV_POINTS>
+<OV_GRID> true </OV_GRID>
+<OV_DBTN> true </OV_DBTN>
+<OV_LEGEND> true </OV_LEGEND>
+<OV_PARAMS> false </OV_PARAMS>
+<OV_READOUT> false </OV_READOUT>
+<OV_INITCOND> false </OV_INITCOND>
+<OV_RDOUTFXFY> 0.0 0.0 </OV_RDOUTFXFY>
+<OV_ZSNORMAL>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XMINMAXDIV> 0.0 120000.0 10  </ZS_XMINMAXDIV>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSNORMAL>
+<OV_ZSFFT>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> true </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSFFT>
+<OV_ZSOSCMODE>
+</OV_ZSOSCMODE>
+<OV_AUTOLABEL> 0 0 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 1 1 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 2 1 </OV_AUTOLABEL>
+<OV_X1LABELS>                       TIME (days)            </OV_X1LABELS>
+<OV_Y1LABELS>  new_infn_y_p100000, new_infn_o_p100000 </OV_Y1LABELS>
+<OV_Y2LABELS>   </OV_Y2LABELS>
+<OV_LEGENDXY> 0.3 0.5 </OV_LEGENDXY>
+<OV_PARAMSXY> 0.3 0.5 </OV_PARAMSXY>
+<OV_COLORTABLE> 0 <OV_COLORTABLE>
+</graph.COutputView>
+</SingleView>
+</graph.COutputFrame>
+<graph.COutputFrame>
+<DocPanel>
+<Name>
+Graph 2
+</Name>
+</DocPanel>
+<overlay> 1 </overlay>
+
+<SingleView>
+<graph.COutputView>
+<Name> Graph </Name>
+<GraphToolBar>
+<Grid> 1 </Grid>
+</GraphToolBar>
+<Plot>
+<LineWidth> 1 </LineWidth>
+</Plot>
+<OV_XVAR>
+<VI_SYMBOL> TIME </VI_SYMBOL>
+</OV_XVAR>
+<OV_YVARS>
+</OV_YVARS>
+<OV_TABLE> false </OV_TABLE>
+<OV_FFT> false </OV_FFT>
+<OV_COLORS> true </OV_COLORS>
+<OV_STYLES> false </OV_STYLES>
+<OV_OSCMODE> false </OV_OSCMODE>
+<OV_LINES> true </OV_LINES>
+<OV_POINTS> false </OV_POINTS>
+<OV_GRID> true </OV_GRID>
+<OV_DBTN> true </OV_DBTN>
+<OV_LEGEND> false </OV_LEGEND>
+<OV_PARAMS> false </OV_PARAMS>
+<OV_READOUT> false </OV_READOUT>
+<OV_INITCOND> false </OV_INITCOND>
+<OV_RDOUTFXFY> 0.0 0.0 </OV_RDOUTFXFY>
+<OV_ZSNORMAL>
+<ZS_SIZE> 2 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+<ZS_I>
+<ZS_XMINMAXDIV> -10000.0 100000.0 8  </ZS_XMINMAXDIV>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1MINMAXDIV> 0.0 100.0 7  </ZS_Y1MINMAXDIV>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSNORMAL>
+<OV_ZSFFT>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> true </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSFFT>
+<OV_ZSOSCMODE>
+</OV_ZSOSCMODE>
+<OV_AUTOLABEL> 0 0 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 1 1 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 2 1 </OV_AUTOLABEL>
+<OV_X1LABELS>                       TIME (days)            </OV_X1LABELS>
+<OV_Y1LABELS>   </OV_Y1LABELS>
+<OV_Y2LABELS>   </OV_Y2LABELS>
+<OV_LEGENDXY> 0.3 0.5 </OV_LEGENDXY>
+<OV_PARAMSXY> 0.3 0.5 </OV_PARAMSXY>
+<OV_COLORTABLE> 0 <OV_COLORTABLE>
+</graph.COutputView>
+</SingleView>
+</graph.COutputFrame>
+<graph.COutputFrame>
+<DocPanel>
+<Name>
+Graph 3
+</Name>
+</DocPanel>
+<overlay> 1 </overlay>
+
+<SingleView>
+<graph.COutputView>
+<Name> Graph </Name>
+<GraphToolBar>
+<Grid> 1 </Grid>
+</GraphToolBar>
+<Plot>
+<LineWidth> 1 </LineWidth>
+</Plot>
+<OV_XVAR>
+<VI_SYMBOL> TIME </VI_SYMBOL>
+</OV_XVAR>
+<OV_YVARS>
+</OV_YVARS>
+<OV_TABLE> false </OV_TABLE>
+<OV_FFT> false </OV_FFT>
+<OV_COLORS> true </OV_COLORS>
+<OV_STYLES> false </OV_STYLES>
+<OV_OSCMODE> false </OV_OSCMODE>
+<OV_LINES> true </OV_LINES>
+<OV_POINTS> false </OV_POINTS>
+<OV_GRID> true </OV_GRID>
+<OV_DBTN> true </OV_DBTN>
+<OV_LEGEND> false </OV_LEGEND>
+<OV_PARAMS> false </OV_PARAMS>
+<OV_READOUT> false </OV_READOUT>
+<OV_INITCOND> false </OV_INITCOND>
+<OV_RDOUTFXFY> 0.0 0.0 </OV_RDOUTFXFY>
+<OV_ZSNORMAL>
+<ZS_SIZE> 2 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+<ZS_I>
+<ZS_XMINMAXDIV> 0.0 150000.0 8  </ZS_XMINMAXDIV>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1MINMAXDIV> 0.0 20.0 4  </ZS_Y1MINMAXDIV>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSNORMAL>
+<OV_ZSFFT>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> true </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSFFT>
+<OV_ZSOSCMODE>
+</OV_ZSOSCMODE>
+<OV_AUTOLABEL> 0 0 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 1 1 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 2 1 </OV_AUTOLABEL>
+<OV_X1LABELS>                       TIME (days)            </OV_X1LABELS>
+<OV_Y1LABELS>   </OV_Y1LABELS>
+<OV_Y2LABELS>   </OV_Y2LABELS>
+<OV_LEGENDXY> 0.3 0.5 </OV_LEGENDXY>
+<OV_PARAMSXY> 0.3 0.5 </OV_PARAMSXY>
+<OV_COLORTABLE> 0 <OV_COLORTABLE>
+</graph.COutputView>
+</SingleView>
+</graph.COutputFrame>
+<graph.COutputFrame>
+<DocPanel>
+<Name>
+Graph 4
+</Name>
+</DocPanel>
+
+<SingleView>
+<graph.COutputView>
+<Name> Graph </Name>
+<GraphToolBar>
+<Grid> 1 </Grid>
+</GraphToolBar>
+<Plot>
+<LineWidth> 1 </LineWidth>
+</Plot>
+<OV_XVAR>
+<VI_SYMBOL> TIME </VI_SYMBOL>
+</OV_XVAR>
+<OV_YVARS>
+</OV_YVARS>
+<OV_TABLE> false </OV_TABLE>
+<OV_FFT> false </OV_FFT>
+<OV_COLORS> true </OV_COLORS>
+<OV_STYLES> false </OV_STYLES>
+<OV_OSCMODE> false </OV_OSCMODE>
+<OV_LINES> true </OV_LINES>
+<OV_POINTS> false </OV_POINTS>
+<OV_GRID> true </OV_GRID>
+<OV_DBTN> true </OV_DBTN>
+<OV_LEGEND> false </OV_LEGEND>
+<OV_PARAMS> false </OV_PARAMS>
+<OV_READOUT> false </OV_READOUT>
+<OV_INITCOND> false </OV_INITCOND>
+<OV_RDOUTFXFY> 0.0 0.0 </OV_RDOUTFXFY>
+<OV_ZSNORMAL>
+<ZS_SIZE> 3 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+<ZS_I>
+<ZS_XMINMAXDIV> 120000.0 124000.0 10  </ZS_XMINMAXDIV>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1MINMAXDIV> 0.0 20.0 9  </ZS_Y1MINMAXDIV>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+<ZS_I>
+<ZS_XMINMAXDIV> 122215.0 122250.0 7  </ZS_XMINMAXDIV>
+<ZS_XLOG> false </ZS_XLOG>
+<ZS_Y1MINMAXDIV> 13.935 13.975 8  </ZS_Y1MINMAXDIV>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSNORMAL>
+<OV_ZSFFT>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> true </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSFFT>
+<OV_ZSOSCMODE>
+</OV_ZSOSCMODE>
+<OV_AUTOLABEL> 0 0 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 1 1 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 2 1 </OV_AUTOLABEL>
+<OV_X1LABELS>                       TIME (days)            </OV_X1LABELS>
+<OV_Y1LABELS>   </OV_Y1LABELS>
+<OV_Y2LABELS>   </OV_Y2LABELS>
+<OV_LEGENDXY> 0.3 0.5 </OV_LEGENDXY>
+<OV_PARAMSXY> 0.3 0.5 </OV_PARAMSXY>
+<OV_COLORTABLE> 0 <OV_COLORTABLE>
+</graph.COutputView>
+</SingleView>
+</graph.COutputFrame>
+<graph.COutputFrame>
+<DocPanel>
+<Name>
+Graph 5
+</Name>
+</DocPanel>
+
+<SingleView>
+<graph.COutputView>
+<Name> Graph </Name>
+<GraphToolBar>
+<Grid> 1 </Grid>
+<Readout> 1 </Readout>
+</GraphToolBar>
+<Plot>
+<LineWidth> 1 </LineWidth>
+</Plot>
+<OV_XVAR>
+<VI_SYMBOL> year </VI_SYMBOL>
+</OV_XVAR>
+<OV_YVARS>
+<OV_YVAR_I>
+<VI_SYMBOL> Sus_y </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> false </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> Infous_y </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> true </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> Imm_y </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> false </VI_Y2AXIS>
+</OV_YVAR_I>
+<OV_YVAR_I>
+<VI_SYMBOL> Sus_o </VI_SYMBOL>
+<VI_SHOW> true </VI_SHOW>
+<VI_Y2AXIS> true </VI_Y2AXIS>
+</OV_YVAR_I>
+</OV_YVARS>
+<OV_TABLE> false </OV_TABLE>
+<OV_FFT> false </OV_FFT>
+<OV_COLORS> true </OV_COLORS>
+<OV_STYLES> false </OV_STYLES>
+<OV_OSCMODE> false </OV_OSCMODE>
+<OV_LINES> true </OV_LINES>
+<OV_POINTS> false </OV_POINTS>
+<OV_GRID> true </OV_GRID>
+<OV_DBTN> true </OV_DBTN>
+<OV_LEGEND> false </OV_LEGEND>
+<OV_PARAMS> false </OV_PARAMS>
+<OV_READOUT> true </OV_READOUT>
+<OV_INITCOND> false </OV_INITCOND>
+<OV_RDOUTFXFY> 182.01754385964915 18511.627906976744 </OV_RDOUTFXFY>
+<OV_ZSNORMAL>
+</OV_ZSNORMAL>
+<OV_ZSFFT>
+<ZS_SIZE> 1 </ZS_SIZE>
+<ZS_I>
+<ZS_XLOG> true </ZS_XLOG>
+<ZS_Y1LOG> false </ZS_Y1LOG>
+<ZS_Y2LOG> false </ZS_Y2LOG>
+</ZS_I>
+</OV_ZSFFT>
+<OV_ZSOSCMODE>
+</OV_ZSOSCMODE>
+<OV_AUTOLABEL> 0 0 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 1 1 </OV_AUTOLABEL>
+<OV_AUTOLABEL> 2 1 </OV_AUTOLABEL>
+<OV_X1LABELS>                       TIME (years)            </OV_X1LABELS>
+<OV_Y1LABELS>  Sus_y, Imm_y </OV_Y1LABELS>
+<OV_Y2LABELS>  Infous_y, Sus_o </OV_Y2LABELS>
+<OV_LEGENDXY> 0.3 0.5 </OV_LEGENDXY>
+<OV_PARAMSXY> 0.3 0.5 </OV_PARAMSXY>
+<OV_COLORTABLE> 0 <OV_COLORTABLE>
+</graph.COutputView>
+</SingleView>
+</graph.COutputFrame>
+</TabSplitter>
+<idx> 1 </idx>
+<TabSplitter>
+<SelectedIndex> -1 </SelectedIndex>
+</TabSplitter>
+</jmadonna.MultiPanel>
+
+<ChemicalReactionDialog>
+<ShowRates> true </ShowRates>
+<ShowConsts> true </ShowConsts>
+<ShowInits> true </ShowInits>
+<ShowDiffs> true </ShowDiffs>
+</ChemicalReactionDialog>
+</Document>
